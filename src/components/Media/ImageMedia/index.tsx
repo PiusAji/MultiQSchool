@@ -64,7 +64,13 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
   let src: StaticImageData | string = srcFromProps || ''
 
   if (!src && resource && typeof resource === 'object') {
-    const { alt: altFromResource, height: fullHeight, url, width: fullWidth } = resource
+    const {
+      alt: altFromResource,
+      height: fullHeight,
+      url,
+      width: fullWidth,
+      cloudinaryUrl,
+    } = resource
 
     width = fullWidth!
     height = fullHeight!
@@ -72,7 +78,8 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
 
     const cacheTag = resource.updatedAt
 
-    src = getMediaUrl(url, cacheTag)
+    // Use Cloudinary URL if available, fallback to local URL
+    src = getMediaUrl((cloudinaryUrl as string) || url, cacheTag)
   }
 
   const loading = loadingFromProps || (!priority ? 'lazy' : undefined)
