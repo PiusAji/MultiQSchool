@@ -52,7 +52,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <head>
         <InitTheme />
         <link href="/favicon.ico" rel="icon" sizes="32x32" />
-        <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
       </head>
       <body>
         <Providers>
@@ -76,6 +75,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
 export const metadata: Metadata = {
   metadataBase: new URL(getServerSideURL()),
+  verification: {
+    google: 'E5glzkCxn3E5q0Ol_l7aNu6J5CIgu8IlapfyANez_fw',
+  },
   openGraph: mergeOpenGraph(),
   twitter: {
     card: 'summary_large_image',
