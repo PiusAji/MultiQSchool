@@ -2,6 +2,19 @@
 const config = {
   theme: {
     extend: {
+      fontFamily: {
+        fredoka: ['var(--font-fredoka)', 'Comic Sans MS', 'cursive', 'sans-serif'],
+        quicksand: ['var(--font-quicksand)', 'sans-serif'],
+      },
+      animation: {
+        'panel-in': 'panelIn 0.5s cubic-bezier(0.76, 0, 0.24, 1) forwards',
+      },
+      keyframes: {
+        panelIn: {
+          from: { opacity: '0', clipPath: 'inset(0 100% 0 0)' },
+          to: { opacity: '1', clipPath: 'inset(0 0% 0 0)' },
+        },
+      },
       typography: () => ({
         DEFAULT: {
           css: [

@@ -222,3 +222,18 @@ html[data-theme='dark'],
 html[data-theme='light'] {
   opacity: initial;
 }
+
+@keyframes panelIn {
+  from {
+    opacity: 0;
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(0 0% 0 0);
+  }
+}
+
+.animate-panel-in {
+  animation: panelIn 0.5s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+}
