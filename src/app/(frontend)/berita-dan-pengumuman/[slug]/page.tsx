@@ -67,7 +67,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!post) return { title: 'Post Not Found' }
 
   const imageUrl =
-    typeof post.heroImage === 'object' && post.heroImage?.url ? post.heroImage.url : undefined
+    typeof post.heroImage === 'object' && post.heroImage
+      ? (post.heroImage as any).cloudinaryUrl || post.heroImage.url
+      : undefined
 
   return {
     title: post.title,

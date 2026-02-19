@@ -107,7 +107,10 @@ export default async function BeritaPage() {
     title: post.title || '',
     heroImage:
       typeof post.heroImage === 'object' && post.heroImage !== null
-        ? { url: post.heroImage.url, alt: post.heroImage.alt }
+        ? {
+            url: (post.heroImage as any).cloudinaryUrl || post.heroImage.url,
+            alt: post.heroImage.alt,
+          }
         : null,
     publishedAt: post.publishedAt || null,
     categories: post.categories

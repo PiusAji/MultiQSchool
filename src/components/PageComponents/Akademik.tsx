@@ -182,7 +182,9 @@ export default function Akademik({ section }: AkademikProps) {
         >
           {awards.map((award, index) => {
             const imageUrl =
-              typeof award.image === 'object' && award.image?.url ? award.image.url : null
+              typeof section.image === 'object' && section.image
+                ? (section.image as any).cloudinaryUrl || section.image.url
+                : null
             const href = hrefMap[index] ?? '#'
 
             return (

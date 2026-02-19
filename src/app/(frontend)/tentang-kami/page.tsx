@@ -28,8 +28,8 @@ export async function generateMetadata() {
         ? [
             {
               url:
-                typeof page.meta.image === 'object' && page.meta.image?.url
-                  ? page.meta.image.url
+                typeof page.meta.image === 'object' && page.meta.image
+                  ? (page.meta.image as any).cloudinaryUrl || page.meta.image.url || ''
                   : '',
             },
           ]

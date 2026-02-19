@@ -155,7 +155,7 @@ export default function PostGrid({ posts, currentCategory = 'all', sectionTitle 
         ) : (
           <div ref={cardsRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {posts.map((post) => {
-              const imageUrl = post.heroImage?.url || null
+              const imageUrl = (post.heroImage as any)?.cloudinaryUrl || post.heroImage?.url || null
               const categoryColors = getCategoryColor(post.categories?.[0]?.title)
 
               return (

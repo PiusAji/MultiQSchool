@@ -96,9 +96,14 @@ export default function MetodeMengajar({ section }: MetodeMengajarProps) {
   const method2 = subsections[1]
 
   const method1ImageUrl =
-    typeof method1?.image === 'object' && method1?.image?.url ? method1.image.url : null
+    typeof method1?.image === 'object' && method1?.image
+      ? (method1.image as any).cloudinaryUrl || method1.image.url
+      : null
+
   const method2ImageUrl =
-    typeof method2?.image === 'object' && method2?.image?.url ? method2.image.url : null
+    typeof method2?.image === 'object' && method2?.image
+      ? (method2.image as any).cloudinaryUrl || method2.image.url
+      : null
 
   const methodAccents = [
     {

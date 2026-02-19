@@ -99,10 +99,14 @@ export default function VisiMisi({ section }: VisiMisiProps) {
   const misiSection = subsections[1]
 
   const visiImageUrl =
-    typeof visiSection?.image === 'object' && visiSection?.image?.url ? visiSection.image.url : null
+    typeof visiSection?.image === 'object' && visiSection?.image
+      ? (visiSection.image as any).cloudinaryUrl || visiSection.image.url
+      : null
 
   const misiImageUrl =
-    typeof misiSection?.image === 'object' && misiSection?.image?.url ? misiSection.image.url : null
+    typeof misiSection?.image === 'object' && misiSection?.image
+      ? (misiSection.image as any).cloudinaryUrl || misiSection.image.url
+      : null
 
   return (
     <div

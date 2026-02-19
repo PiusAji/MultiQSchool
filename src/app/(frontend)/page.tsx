@@ -37,8 +37,8 @@ export async function generateMetadata() {
         ? [
             {
               url:
-                typeof page.meta.image === 'object' && page.meta.image?.url
-                  ? page.meta.image.url
+                typeof page.meta.image === 'object' && page.meta.image
+                  ? (page.meta.image as any).cloudinaryUrl || page.meta.image.url || ''
                   : '',
             },
           ]
@@ -122,7 +122,7 @@ export default async function HomePage() {
               {section.image && typeof section.image === 'object' && section.image?.url && (
                 <div className="w-full max-w-4xl rounded-3xl overflow-hidden shadow-2xl">
                   <img
-                    src={section.image.url}
+                    src={(section.image as any).cloudinaryUrl || section.image.url}
                     alt={section.title || ''}
                     className="w-full h-auto"
                   />

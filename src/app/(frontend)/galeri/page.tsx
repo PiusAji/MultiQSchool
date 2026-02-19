@@ -23,10 +23,16 @@ export async function generateMetadata() {
     openGraph: {
       title: page.meta?.title || page.title,
       description: page.meta?.description,
-      images:
-        page.meta?.image && typeof page.meta.image === 'object' && page.meta.image?.url
-          ? [{ url: page.meta.image.url }]
-          : undefined,
+      images: page.meta?.image
+        ? [
+            {
+              url:
+                typeof page.meta.image === 'object' && page.meta.image
+                  ? (page.meta.image as any).cloudinaryUrl || page.meta.image.url || ''
+                  : '',
+            },
+          ]
+        : undefined,
     },
   }
 }

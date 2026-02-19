@@ -89,7 +89,9 @@ export default function HeroAkademikSD({ section }: HeroAkademikSDProps) {
   }, [])
 
   const imageUrl =
-    typeof section.image === 'object' && section.image?.url ? section.image.url : null
+    typeof section.image === 'object' && section.image
+      ? (section.image as any).cloudinaryUrl || section.image.url
+      : null
 
   return (
     <div

@@ -62,8 +62,8 @@ export async function generateMetadata() {
         ? [
             {
               url:
-                typeof page.meta.image === 'object' && page.meta.image?.url
-                  ? page.meta.image.url
+                typeof page.meta.image === 'object' && page.meta.image
+                  ? (page.meta.image as any).cloudinaryUrl || page.meta.image.url || ''
                   : '',
             },
           ]
@@ -107,7 +107,10 @@ export default async function BeritaPengumumanPage() {
     title: post.title || '',
     heroImage:
       typeof post.heroImage === 'object' && post.heroImage !== null
-        ? { url: post.heroImage.url, alt: post.heroImage.alt }
+        ? {
+            url: (post.heroImage as any).cloudinaryUrl || post.heroImage.url,
+            alt: post.heroImage.alt,
+          }
         : null,
     publishedAt: post.publishedAt || null,
     categories: post.categories

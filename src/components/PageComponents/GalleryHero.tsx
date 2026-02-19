@@ -33,10 +33,10 @@ export default function GalleryHero({ section }: GalleryHeroProps) {
       : null
 
   const heroImageUrl =
-    typeof section.image === 'object' && section.image?.url
-      ? section.image.url
-      : firstGallery && typeof firstGallery.coverImage === 'object' && firstGallery.coverImage?.url
-        ? firstGallery.coverImage.url
+    typeof section.image === 'object' && section.image
+      ? (section.image as any).cloudinaryUrl || section.image.url
+      : firstGallery && typeof firstGallery.coverImage === 'object' && firstGallery.coverImage
+        ? (firstGallery.coverImage as any).cloudinaryUrl || firstGallery.coverImage.url
         : null
 
   // Up to 4 thumbnails from the first gallery for the bottom strip

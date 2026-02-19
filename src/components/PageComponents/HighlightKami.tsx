@@ -157,8 +157,8 @@ export default function HighlightKami({ section }: HighlightKamiProps) {
         <div ref={cardsRef} className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
           {subsections.map((subsection, index) => {
             const imageUrl =
-              typeof subsection.image === 'object' && subsection.image?.url
-                ? subsection.image.url
+              typeof subsection.image === 'object' && subsection.image
+                ? (subsection.image as any).cloudinaryUrl || subsection.image.url
                 : null
 
             return (
