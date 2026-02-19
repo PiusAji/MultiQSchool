@@ -104,7 +104,6 @@ export default function HomeHero({ section, nextSection, highlightSection }: Hom
               start: 'top top',
               end: 'center center',
               scrub: 0.5,
-              markers: true,
             },
             borderRadius: '2% 2% 2% 2% / 2% 2% 2% 2%',
             rotation: 0,
@@ -115,7 +114,6 @@ export default function HomeHero({ section, nextSection, highlightSection }: Hom
           ScrollTrigger.create({
             trigger: tentangKamiRef.current,
             start: 'center center',
-            markers: true,
             onEnter: () => {
               const moveLeftDistance = '-105%'
               const moveDownDistance = '105vh'
@@ -173,7 +171,6 @@ export default function HomeHero({ section, nextSection, highlightSection }: Hom
             start: 'top top',
             end: () => `+=${tentangKamiRef.current?.offsetHeight || 1000}`,
             pin: true,
-            markers: true,
             anticipatePin: 1,
             onLeave: () => {
               // Refresh all ScrollTriggers after unpinning to recalculate positions
