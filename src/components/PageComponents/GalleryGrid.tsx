@@ -20,7 +20,9 @@ function cloudinaryFill(url: string, w: number, h: number): string {
 
 function getMediaUrl(media: string | Media | null | undefined): string | null {
   if (!media) return null
-  if (typeof media === 'object' && media.url) return media.url
+  if (typeof media === 'object') {
+    return (media as any).cloudinaryUrl || media.url || null
+  }
   return null
 }
 

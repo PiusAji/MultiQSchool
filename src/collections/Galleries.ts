@@ -16,6 +16,13 @@ export const Galleries: CollectionConfig = {
     defaultColumns: ['title', 'category', 'date', 'updatedAt'],
     description: 'Manage gallery albums/activities shown on the Gallery page.',
   },
+  defaultPopulate: {
+    title: true,
+    category: true,
+    date: true,
+    coverImage: true,
+    images: true,
+  },
   fields: [
     {
       name: 'title',

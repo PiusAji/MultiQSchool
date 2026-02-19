@@ -99,7 +99,7 @@ export const Media: CollectionConfig = {
   ],
   upload: {
     staticDir: '/tmp/media',
-    adminThumbnail: 'thumbnail',
+    adminThumbnail: ({ doc }) => (doc as any).cloudinaryUrl || '',
     focalPoint: true,
     imageSizes: [
       { name: 'thumbnail', width: 300 },
