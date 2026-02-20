@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import type { Section } from '@/payload-types'
@@ -27,10 +27,20 @@ export default function HomeHero({ section, nextSection, highlightSection }: Hom
   const tentangKamiRef = useRef<HTMLDivElement>(null)
   const tentangKamiContentRef = useRef<HTMLDivElement>(null)
 
+  const [isMobile, setIsMobile] = useState(false)
+
+  // Detect mobile on mount and resize
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 1024)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
+
   useEffect(() => {
     // Check if we're on mobile (viewport width < 1024px for lg breakpoint)
     const checkMobile = () => window.innerWidth < 1024
-    let isMobile = checkMobile()
+    let isMobileLocal = checkMobile()
 
     const ctx = gsap.context(() => {
       // Initial hero entrance animation (works on all devices)
@@ -137,7 +147,7 @@ export default function HomeHero({ section, nextSection, highlightSection }: Hom
                   duration: 0.8,
                   stagger: 0.1,
                   ease: 'power2.out',
-                  delay: 0.4, // Delay slightly after slide starts
+                  delay: 0.4,
                 })
               }
             },
@@ -173,11 +183,9 @@ export default function HomeHero({ section, nextSection, highlightSection }: Hom
             pin: true,
             anticipatePin: 1,
             onLeave: () => {
-              // Refresh all ScrollTriggers after unpinning to recalculate positions
               ScrollTrigger.refresh()
             },
             onEnterBack: () => {
-              // Refresh when entering back
               ScrollTrigger.refresh()
             },
           })
@@ -194,17 +202,25 @@ export default function HomeHero({ section, nextSection, highlightSection }: Hom
           })
         }
 
-        // Reset image position
+        // Reset image position and shape
         if (imageRef.current) {
           gsap.set(imageRef.current, {
             x: 0,
             y: 0,
           })
         }
+
+        // Reset blob shape to square on mobile
+        if (imageBlobRef.current) {
+          gsap.set(imageBlobRef.current, {
+            borderRadius: '16px',
+            rotation: 0,
+          })
+        }
       }
 
       // Setup based on initial viewport
-      if (!isMobile) {
+      if (!isMobileLocal) {
         setupDesktopAnimations()
       } else {
         setupMobileLayout()
@@ -214,9 +230,8 @@ export default function HomeHero({ section, nextSection, highlightSection }: Hom
       const handleResize = () => {
         const nowMobile = checkMobile()
 
-        if (nowMobile !== isMobile) {
-          // Viewport crossed the breakpoint
-          isMobile = nowMobile
+        if (nowMobile !== isMobileLocal) {
+          isMobileLocal = nowMobile
 
           // Kill all existing ScrollTriggers
           ScrollTrigger.getAll().forEach((st) => st.kill())
@@ -230,7 +245,7 @@ export default function HomeHero({ section, nextSection, highlightSection }: Hom
           }
 
           // Setup appropriate layout
-          if (!isMobile) {
+          if (!isMobileLocal) {
             setupDesktopAnimations()
           } else {
             setupMobileLayout()
@@ -322,8 +337,9 @@ export default function HomeHero({ section, nextSection, highlightSection }: Hom
                     ref={imageBlobRef}
                     className="relative w-full h-full overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.15),0_15px_30px_rgba(255,107,157,0.2)]"
                     style={{
-                      borderRadius: '30% 70% 70% 30% / 30% 30% 70% 70%',
-                      transform: 'rotate(-3deg)',
+                      // ← Key fix: use square on mobile, blob on desktop
+                      borderRadius: isMobile ? '16px' : '30% 70% 70% 30% / 30% 30% 70% 70%',
+                      transform: isMobile ? 'none' : 'rotate(-3deg)',
                       willChange: 'border-radius, transform',
                     }}
                   >

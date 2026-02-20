@@ -25,6 +25,20 @@ export default buildConfig({
     components: {
       beforeLogin: ['@/components/BeforeLogin'],
       beforeDashboard: ['@/components/BeforeDashboard'],
+      graphics: {
+        Logo: '@/components/Logo/Logo#Logo',
+        Icon: '@/components/Logo/Icon#Icon',
+      },
+    },
+    meta: {
+      titleSuffix: '-Multi-Q', // changes "Login - Payload" to "Login - My App Name"
+      icons: [
+        {
+          rel: 'icon',
+          type: 'image/png',
+          url: '/favicon.ico', // your public/logo.png
+        },
+      ],
     },
     importMap: {
       baseDir: path.resolve(dirname),

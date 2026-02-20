@@ -14,16 +14,29 @@ export const Logo = (props: Props) => {
   const priority = priorityFromProps || 'low'
 
   return (
-    /* eslint-disable @next/next/no-img-element */
-    <img
-      alt="Payload Logo"
-      width={193}
-      height={34}
-      loading={loading}
-      fetchPriority={priority}
-      decoding="async"
-      className={clsx('max-w-[9.375rem] w-full h-[34px]', className)}
-      src="https://raw.githubusercontent.com/payloadcms/payload/main/packages/ui/src/assets/payload-logo-light.svg"
-    />
+    <div
+      style={{
+        backgroundColor: 'white',
+        borderRadius: '50%',
+        width: '120px',
+        height: '120px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden',
+        padding: '8px',
+      }}
+    >
+      <img
+        alt="Multi-Q Logo"
+        width={104}
+        height={104}
+        loading={loading}
+        fetchPriority={priority}
+        decoding="async"
+        className={clsx('w-full h-full object-contain', className)}
+        src="/logo.png"
+      />
+    </div>
   )
 }

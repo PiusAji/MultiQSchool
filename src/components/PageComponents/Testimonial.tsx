@@ -15,13 +15,10 @@ export default function Testimonial({ section }: TestimonialProps) {
   const sectionRef = useRef<HTMLDivElement>(null)
   const spotlightRef = useRef<HTMLDivElement>(null)
   const cardsContainerRef = useRef<HTMLDivElement>(null)
-  const activeCardRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Check if we're on mobile
       const checkMobile = () => window.innerWidth < 1024
-      let isMobile = checkMobile()
 
       // Floating shapes animation
       const shapes = sectionRef.current?.querySelectorAll('.shape')
@@ -53,102 +50,115 @@ export default function Testimonial({ section }: TestimonialProps) {
         },
       })
 
-      // Get all testimonial cards
       const cards = cardsContainerRef.current?.querySelectorAll('.testimonial-card')
-      if (cards && cards.length > 0) {
-        let currentIndex = 0
+      if (!cards || cards.length === 0) return
 
-        // Store original positions for each card
-        const originalPositions: { x: number; y: number }[] = []
-        cards.forEach((card, index) => {
-          const element = card as HTMLElement
-          const position = cardPositions[index % cardPositions.length]
-          originalPositions.push(position)
+      let currentIndex = 0
+      let loopTimeout: ReturnType<typeof setTimeout>
 
-          gsap.set(element, {
-            opacity: 0.4,
-            scale: 0.85,
-            zIndex: 1,
-          })
+      const originalPositions: { x: number; y: number }[] = []
+      cards.forEach((card, index) => {
+        const position = cardPositions[index % cardPositions.length]
+        originalPositions.push(position)
+        gsap.set(card as HTMLElement, {
+          opacity: 0.4,
+          scale: 0.85,
+          zIndex: 1,
+        })
+      })
+
+      /**
+       * On mobile, compute Y offset from the cards container center so the
+       * focused card sits 20px below the spotlight text and never clips
+       * behind the footer. Uses live getBoundingClientRect() so it works
+       * on any screen height.
+       */
+      const getMobileY = (cardEl: HTMLElement) => {
+        if (!sectionRef.current || !spotlightRef.current) return 200
+
+        const sectionRect = sectionRef.current.getBoundingClientRect()
+        const spotlightRect = spotlightRef.current.getBoundingClientRect()
+        const scale = 0.88
+        const cardH = cardEl.offsetHeight * scale
+        const gap = 20
+        const safeBottom = 24
+
+        // Center of cards container in viewport coordinates
+        const containerCenterY = sectionRect.top + sectionRect.height / 2
+
+        // Ideal: card top = spotlight bottom + gap
+        let cardCenterY = spotlightRect.bottom + gap + cardH / 2
+
+        // Clamp bottom: card must not go below (viewport - safeBottom)
+        const maxCardCenterY = window.innerHeight - safeBottom - cardH / 2
+        cardCenterY = Math.min(cardCenterY, maxCardCenterY)
+
+        // Clamp top: card must never overlap spotlight
+        const minCardCenterY = spotlightRect.bottom + gap + cardH / 2
+        cardCenterY = Math.max(cardCenterY, minCardCenterY)
+
+        return cardCenterY - containerCenterY
+      }
+
+      const spotlightCard = (index: number) => {
+        const card = cards[index] as HTMLElement
+        const nowMobile = checkMobile()
+        const yOffset = nowMobile ? getMobileY(card) : -320
+
+        gsap.to(card, {
+          x: 0,
+          y: yOffset,
+          scale: nowMobile ? 0.88 : 1,
+          opacity: 1,
+          zIndex: 40,
+          duration: 1,
+          ease: 'power2.out',
         })
 
-        // Function to spotlight a card
-        const spotlightCard = (index: number) => {
-          const card = cards[index] as HTMLElement
-          const nowMobile = checkMobile()
-
-          // Move card to center - ABOVE on desktop, BELOW on mobile
-          gsap.to(card, {
-            x: 0,
-            y: nowMobile ? 200 : -320, // Reduced gap on mobile to prevent cutoff
-            scale: 1,
-            opacity: 1,
-            zIndex: 40,
-            duration: 1,
-            ease: 'power2.out',
-          })
-
-          // Return other cards to their original scattered positions
-          cards.forEach((otherCard, otherIndex) => {
-            if (otherIndex !== index) {
-              const element = otherCard as HTMLElement
-              const originalPos = originalPositions[otherIndex]
-
-              gsap.to(element, {
-                x: originalPos.x,
-                y: originalPos.y,
-                opacity: 0.4,
-                scale: 0.85,
-                zIndex: 1,
-                duration: 1,
-                ease: 'power2.out',
-              })
-            }
-          })
-        }
-
-        // Animation loop
-        const animateLoop = () => {
-          spotlightCard(currentIndex)
-
-          // Move to next card after delay
-          setTimeout(() => {
-            currentIndex = (currentIndex + 1) % cards.length
-            animateLoop()
-          }, 5000) // 5 seconds per testimonial
-        }
-
-        // Start the loop after initial entrance
-        setTimeout(() => {
-          spotlightCard(0)
-          setTimeout(animateLoop, 5000)
-        }, 1000)
-
-        // Handle resize - reposition active card if switching mobile/desktop
-        const handleResize = () => {
-          const nowMobile = checkMobile()
-          if (nowMobile !== isMobile) {
-            isMobile = nowMobile
-            // Reposition current active card
-            spotlightCard(currentIndex)
+        cards.forEach((otherCard, otherIndex) => {
+          if (otherIndex !== index) {
+            const element = otherCard as HTMLElement
+            const originalPos = originalPositions[otherIndex]
+            gsap.to(element, {
+              x: originalPos.x,
+              y: originalPos.y,
+              opacity: 0.4,
+              scale: 0.85,
+              zIndex: 1,
+              duration: 1,
+              ease: 'power2.out',
+            })
           }
-        }
+        })
+      }
 
-        window.addEventListener('resize', handleResize)
+      const animateLoop = () => {
+        spotlightCard(currentIndex)
+        loopTimeout = setTimeout(() => {
+          currentIndex = (currentIndex + 1) % cards.length
+          animateLoop()
+        }, 5000)
+      }
 
-        return () => {
-          window.removeEventListener('resize', handleResize)
-        }
+      setTimeout(() => {
+        spotlightCard(0)
+        loopTimeout = setTimeout(animateLoop, 5000)
+      }, 1000)
+
+      const handleResize = () => spotlightCard(currentIndex)
+      window.addEventListener('resize', handleResize)
+
+      return () => {
+        window.removeEventListener('resize', handleResize)
+        clearTimeout(loopTimeout)
       }
     }, sectionRef)
 
     return () => ctx.revert()
   }, [section])
 
-  // Get subsections (testimonials)
   const testimonials = section.subsections || []
 
-  // Scattered positions for cards - further spread out
   const cardPositions = [
     { x: -500, y: -350 },
     { x: 550, y: -300 },
@@ -163,7 +173,7 @@ export default function Testimonial({ section }: TestimonialProps) {
   return (
     <div
       ref={sectionRef}
-      className="relative min-h-screen lg:min-h-[140vh] flex items-start lg:items-center justify-center bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 px-8 pt-20 pb-24 lg:py-32 overflow-hidden"
+      className="relative lg:min-h-[140vh] flex items-start lg:items-center justify-center bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 px-8 pt-20 pb-[320px] lg:py-32 overflow-hidden"
     >
       {/* Floating decorative shapes */}
       <div className="absolute inset-0 pointer-events-none z-10">
@@ -209,26 +219,23 @@ export default function Testimonial({ section }: TestimonialProps) {
                 transform: `translate(${position.x}px, ${position.y}px)`,
               }}
             >
-              <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 md:p-10 shadow-[0_20px_60px_rgba(0,0,0,0.15)]">
-                {/* Name at top */}
-                <h3 className="font-fredoka text-2xl md:text-3xl font-bold text-gray-800 mb-6 text-center">
+              <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 md:p-10 shadow-[0_20px_60px_rgba(0,0,0,0.15)]">
+                <h3 className="font-fredoka text-2xl md:text-3xl font-bold text-gray-800 mb-4 text-center">
                   {testimonial.title}
                 </h3>
 
-                {/* Testimonial text in middle */}
                 {testimonial.description && (
-                  <p className="font-quicksand text-base md:text-lg text-gray-600 leading-relaxed mb-6 text-center whitespace-pre-line">
+                  <p className="font-quicksand text-sm md:text-lg text-gray-600 leading-relaxed mb-4 text-center whitespace-pre-line">
                     {testimonial.description}
                   </p>
                 )}
 
-                {/* Quote at bottom */}
                 {testimonial.subtitle && (
                   <div className="flex items-center justify-center gap-3">
                     <span className="font-fredoka text-4xl text-pink-400 leading-none">
                       &ldquo;
                     </span>
-                    <p className="font-quicksand text-lg md:text-xl font-semibold text-pink-500 italic">
+                    <p className="font-quicksand text-base md:text-xl font-semibold text-pink-500 italic">
                       {testimonial.subtitle}
                     </p>
                     <span className="font-fredoka text-4xl text-pink-400 leading-none">
