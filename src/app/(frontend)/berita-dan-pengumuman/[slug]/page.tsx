@@ -108,8 +108,11 @@ export default async function PostDetailPage({ params }: { params: Promise<{ slu
     }).format(date)
   }
 
+  // ✅ Fix 1: prefer cloudinaryUrl over local url
   const imageUrl =
-    typeof post.heroImage === 'object' && post.heroImage?.url ? post.heroImage.url : null
+    typeof post.heroImage === 'object' && post.heroImage
+      ? (post.heroImage as any).cloudinaryUrl || post.heroImage.url || null
+      : null
 
   const categoryColors = (categoryTitle?: string) => {
     if (!categoryTitle) return { bg: 'bg-gray-100', text: 'text-gray-700' }
@@ -227,9 +230,10 @@ export default async function PostDetailPage({ params }: { params: Promise<{ slu
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {relatedPosts.docs.map((related) => {
+              // ✅ Fix 2: prefer cloudinaryUrl over local url for related posts
               const relatedImageUrl =
-                typeof related.heroImage === 'object' && related.heroImage?.url
-                  ? related.heroImage.url
+                typeof related.heroImage === 'object' && related.heroImage
+                  ? (related.heroImage as any).cloudinaryUrl || related.heroImage.url || null
                   : null
 
               return (
